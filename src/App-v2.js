@@ -1,5 +1,52 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import StarRating from './StarRating';
+
+const tempMovieData = [
+  {
+    imdbID: 'tt1375666',
+    Title: 'Inception',
+    Year: '2010',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
+  },
+  {
+    imdbID: 'tt0133093',
+    Title: 'The Matrix',
+    Year: '1999',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg',
+  },
+  {
+    imdbID: 'tt6751668',
+    Title: 'Parasite',
+    Year: '2019',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg',
+  },
+];
+
+const tempWatchedData = [
+  {
+    imdbID: 'tt1375666',
+    Title: 'Inception',
+    Year: '2010',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
+    runtime: 148,
+    imdbRating: 8.8,
+    userRating: 10,
+  },
+  {
+    imdbID: 'tt0088763',
+    Title: 'Back to the Future',
+    Year: '1985',
+    Poster:
+      'https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
+    runtime: 116,
+    imdbRating: 8.5,
+    userRating: 9,
+  },
+];
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -202,18 +249,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState('');
-
-  const countRef = useRef(0);
-  let count = 0;
-
-  useEffect(
-    function () {
-      if (userRating) countRef.current++;
-      if (userRating) count++;
-    },
-    [userRating, count]
-  );
-
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   console.log('watched', watched);
   console.log('isWatched', isWatched);
@@ -234,11 +269,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     Genre: genre,
   } = movie;
 
-  const [isTop, setIsTop] = useState(imdbRating > 8);
-  console.log('isTop', isTop);
-
-  const [avgRating, setAvgRating] = useState(0);
-
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -248,17 +278,9 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(' ').at(0)),
       userRating,
-      countRatingDecisions: countRef.current,
-      count,
     };
     onAddWatched(newWatchedMovie);
-    // onCloseMovie();  //在162節6:17的時候註解掉
-    setAvgRating(imdbRating);
-    // console.log('Before avgRating', avgRating, 'userRating', userRating);
-    setAvgRating((avgRating) => (avgRating + userRating) / 2);
-    // console.log(' avgRating:', (avgRating + userRating) / 2);
-
-    console.log('After avgRating:', avgRating);
+    onCloseMovie();
   }
 
   useEffect(function () {
@@ -330,8 +352,6 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
               </p>
             </div>
           </header>
-
-          <p>{avgRating}</p>
           <section>
             <div className="rating">
               {!isWatched ? (
